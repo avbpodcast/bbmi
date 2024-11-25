@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Big Mac Purchasing Power</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#1d1f21">
+    <meta name="description" content="Live Bitcoin to Big Mac conversion using prices from Binance.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'MESLO LG';
+            src: url('/meslo.ttf') format('woff2'), 
+                 url('/meslo.ttf') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'MESLO LG', Arial, sans-serif;
+            color: #fff;
+            background-color: #1d1f21;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #FFA500;
+            color: #1d1f21;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 1em;
+            transition: background-color 0.3s, color 0.3s;
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background-color: #FFD700;
+            color: #1d1f21;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            background: #333;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-top: 50px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #f7931a;
+        }
+
+        #btc-to-big-mac,
+        #big-mac-in-sats {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+
+        .footer {
+            margin-top: 20px;
+            color: #DCDCDC;
+            font-size: 0.9em;
+        }
+
+        .version {
+            position: fixed;
+            bottom: 10px;
+            color: #DCDCDC;
+            font-size: 0.8em;
+            z-index: 1000;
+        }
+
+        a.profile-link {
+            color: lightgrey;
+            text-decoration: none;
+        }
+
+        a.profile-link:hover {
+            text-decoration: underline;
+        }
+
+        .belgian-version-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #FF4500;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 0.9em;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .belgian-version-button:hover {
+            background-color: #FF6347;
+        }
+    </style>
+</head>
+
+<body>
+    <a class="home-button" href="https://allesvoorbitcoin.be/">HOME</a>
+    <div class="container">
+        <h1>Bitcoin Big Mac Index</h1>
+        <h3>(purchasing power)</h3>
+        <small>by <a href="https://x.com/avbpodcast" target="_blank" class="profile-link">@AVBpodcast</a></small>
+        <p></p>
+        <p id="btc-to-big-mac">Loading...</p>
+        <p id="big-mac-in-sats">Loading...</p>
+        <p id="prices">Fetching prices...</p>
+        <div class="footer">
+            Data sources: Binance | <b>McDonald's USA</b>
+        </div>
+        <a class="belgian-version-button" href="/bbmi_be">Go to Belgian version </a>
+    </div>
+
+    <p class="version">Version 1.0</p>
+
+    <script>
+        // Fixed Big Mac price in USD (Average US price)
+        const bigMacPriceInUSD = 5.36;
+
+        // Satoshis per Bitcoin (1 BTC = 100,000,000 sats)
+        const satoshisPerBitcoin = 100000000;
+
+        // Function to fetch Bitcoin price from Binance
+        async function fetchPriceFromBinance() {
+            try {
+                const response = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                return parseFloat(data.price);
+            } catch (error) {
+                console.error('Error fetching from Binance:', error.message);
+                return null;
+            }
+        }
+
+        // Update the display
+        async function updateBTCToBigMac() {
+            const btcPrice = await fetchPriceFromBinance();
+
+            if (btcPrice !== null) {
+                const bigMacsPerBTC = Math.floor(btcPrice / bigMacPriceInUSD);
+                const bigMacInSats = Math.floor((bigMacPriceInUSD / btcPrice) * satoshisPerBitcoin);
+
+                document.getElementById('btc-to-big-mac').innerText = 
+                    `1 BTC = ${bigMacsPerBTC} Big Macs`;
+                document.getElementById('big-mac-in-sats').innerText = 
+                    `1 Big Mac = ${bigMacInSats} sats`;
+                document.getElementById('prices').innerText =
+                    `Bitcoin Price: $${btcPrice.toFixed(2)} | Big Mac Price: $${bigMacPriceInUSD.toFixed(2)}`;
+            } else {
+                document.getElementById('btc-to-big-mac').innerText = "Error fetching data";
+                document.getElementById('big-mac-in-sats').innerText = "Unable to calculate Big Mac in sats.";
+                document.getElementById('prices').innerText = "Unable to load Bitcoin price. Please try again.";
+            }
+        }
+
+        // Initial update and periodic refresh every 60 seconds
+        updateBTCToBigMac();
+        setInterval(updateBTCToBigMac, 60000);
+    </script>
+</body>
+</html>
