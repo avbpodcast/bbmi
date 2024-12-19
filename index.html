@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -85,22 +86,52 @@
             font-size: 0.8em;
             z-index: 1000;
         }
+
+        a.profile-link {
+            color: lightgrey;
+            text-decoration: none;
+        }
+
+        a.profile-link:hover {
+            text-decoration: underline;
+        }
+
+        .usa-version-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #4682B4;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 0.9em;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .usa-version-button:hover {
+            background-color: #5A9BD4;
+        }
     </style>
 </head>
 
 <body>
     <a class="home-button" href="https://allesvoorbitcoin.be/">HOME</a>
     <div class="container">
-        <h1>Bitcoin Big Mac Purchasing Power</h1>
+        <h1>Bitcoin Big Mac Index</h1>
+        <h3>(purchasing power)</h3>
+        <small>by <a href="https://x.com/avbpodcast" target="_blank" class="profile-link">@AVBpodcast</a></small>
+        <p> </p>
         <p id="btc-to-big-mac">Loading...</p>
         <p id="big-mac-in-sats">Loading...</p>
         <p id="prices">Fetching prices...</p>
         <div class="footer">
-            Data source: Kraken and McDonald's <b>Belgium</b> prices
+            Data sources: Kraken | <b>McDonald's Belgium</b>
         </div>
+        <a class="usa-version-button" href="indexUSA.html">Go to USA Version</a>
     </div>
 
-    <p class="version">Version 1.02</p>
+    <p class="version">Version 1.0.4</p>
 
     <script>
         // Fixed Big Mac price in EUR (Belgian McDonald's price)
